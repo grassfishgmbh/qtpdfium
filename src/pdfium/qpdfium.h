@@ -25,12 +25,16 @@ public:
     int pageCount() const;
 
     QWeakPointer<QPdfiumPage> page(int i);
+
+    void setCaching(bool caching);
+    bool caching();
 private:
     Q_DISABLE_COPY(QPdfium)
     void* m_document;
     QString m_filename;
     int m_pageCount;
     QMap<int, QSharedPointer<QPdfiumPage>> m_pages;
+    bool m_caching;
 };
 
 QT_END_NAMESPACE

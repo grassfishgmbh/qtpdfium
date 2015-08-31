@@ -59,7 +59,25 @@ QWeakPointer<QPdfiumPage> QPdfium::page(int i)
     Q_ASSERT( i < m_pageCount && i >=0 );
     if (m_pages[i].isNull())
         m_pages[i] = QSharedPointer<QPdfiumPage>(new QPdfiumPage(FPDF_LoadPage(m_document, i), i));
+
+    if(!m_caching) {
+        foreach (int key, m_pages.keys()) {
+            if(i != key)
+                m_pages.remove(key);
+        }
+    }
+
     return m_pages[i].toWeakRef();
+}
+
+void QPdfium::setCaching(bool caching)
+{
+    m_caching = caching;
+}
+
+bool QPdfium::caching()
+{
+    return m_caching;
 }
 
 QT_END_NAMESPACE
