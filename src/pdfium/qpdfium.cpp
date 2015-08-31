@@ -8,6 +8,7 @@ QPdfium::QPdfium(QObject *parent)
     : QObject(parent)
     , m_document(nullptr)
     , m_pageCount(0)
+    , m_caching(true)
 {
 }
 
@@ -20,8 +21,10 @@ QPdfium::QPdfium(QString filename, QObject *parent)
 }
 
 QPdfium::~QPdfium() {
-    if (m_document)
+    if (m_document) {
+        m_pages.clear();
         FPDF_CloseDocument(m_document);
+    }
     m_document = nullptr;
 }
 
@@ -35,8 +38,8 @@ void QPdfium::setFilename(QString filename)
     if (m_filename != filename) {
         m_filename = filename;
         if (m_document) {
-            FPDF_CloseDocument(m_document);
             m_pages.clear();
+            FPDF_CloseDocument(m_document);
         }
         m_document = FPDF_LoadDocument(m_filename.toUtf8().constData(), NULL);
         if (m_document)
@@ -51,7 +54,7 @@ QString QPdfium::filename() const
 
 int QPdfium::pageCount() const
 {
-        return m_pageCount;
+    return m_pageCount;
 }
 
 QWeakPointer<QPdfiumPage> QPdfium::page(int i)
@@ -62,8 +65,9 @@ QWeakPointer<QPdfiumPage> QPdfium::page(int i)
 
     if(!m_caching) {
         foreach (int key, m_pages.keys()) {
-            if(i != key)
+            if(i != key) {
                 m_pages.remove(key);
+            }
         }
     }
 

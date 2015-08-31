@@ -7,6 +7,9 @@ QT_BEGIN_NAMESPACE
 
 QPdfiumPage::~QPdfiumPage()
 {
+    if(m_page) {
+        FPDF_ClosePage(m_page);
+    }
 }
 
 qreal QPdfiumPage::width() const
